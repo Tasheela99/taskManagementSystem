@@ -42,6 +42,10 @@ public class TaskServiceImpl implements TaskService {
                 taskId,
                 dto.getTaskName(),
                 dto.getTaskDescription(),
+                dto.getTaskAssignedBy(),
+                dto.getTaskAssignedFor(),
+                dto.getTaskAssignedDate(),
+                dto.getTaskDeadLine(),
                 true
         );
         if (!taskRepo.existsById(taskDTO.getTaskId())){
@@ -59,6 +63,10 @@ public class TaskServiceImpl implements TaskService {
         Task task = selectedTask.get();
         task.setTaskName(dto.getTaskName());
         task.setTaskDescription(dto.getTaskDescription());
+        task.setTaskAssignedBy(dto.getTaskAssignedBy());
+        task.setTaskAssignedFor(dto.getTaskAssignedFor());
+        task.setTaskAssignedDate(dto.getTaskAssignedDate());
+        task.setTaskDeadLine(dto.getTaskDeadLine());
         task.setActiveState(dto.isActiveState());
         taskRepo.save(task);
         return true;

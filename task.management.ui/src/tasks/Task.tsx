@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
-import { Modal } from "react-bootstrap";
+import { Form, Modal } from "react-bootstrap";
 import AxiosInstance from '../config/axiosInstance';
 
 interface Task {
     taskId: string,
     taskName: string,
     taskDescription: string,
-    taskDate: string,
+    taskAssignedBy: string,
+    taskAssignedFor: string,
+    taskAssignedDate: string,
+    taskDeadLine: string,
     activeState: boolean
 }
 
@@ -15,16 +18,35 @@ const Task: React.FC = () => {
 
     const currentDate = new Date();
     const formattedDate = currentDate.toDateString();
+
     const [taskName, setTaskName] = useState('');
     const [taskDescription, setTaskDescription] = useState('');
+    const [taskAssignedBy, setTaskAssignedBy] = useState('');
+    const [taskAssignedFor, setTaskAssignedFor] = useState('');
+    const [taskAssignedDate, setTaskAssignedDate] = useState('');
+    const [taskDeadLine, setTaskDeadLine] = useState('');
+
+
     const [tasks, setTasks] = useState<Task[]>([]);
     const [updateTaskName, setUpdateTaskName] = useState('');
     const [updateTaskDescription, setUpdateTaskDescription] = useState('');
+    const [updateTaskAssignedFor, setUpdateTaskAssignedFor] = useState('');
+    const [updateTaskAssignedBy, setUpdateTaskAssignedBy] = useState('');
+    const [updateTaskAssignedDate, setUpdateTaskAssignedDate] = useState('');
+    const [updateTaskDeadLine, setUpdateTaskDeadLine] = useState('');
+
+
+
     const [updateTaskState, setUpdateTaskState] = useState(true);
     const [selectedTaskId, setSelectedTaskId] = useState('');
     const [modalState, setModalState] = useState<boolean>(false);
+
     const [taskNameError, setTaskNameError] = useState('');
     const [taskDescriptionError, setTaskDescriptionError] = useState('');
+    const [taskAssignedByError, setTaskAssignedByError] = useState('');
+    const [taskAssignedForError, setTaskAssignedForError] = useState('');
+    const [taskAssignedDateError, setTaskAssignedDateError] = useState('');
+    const [taskDeadLineError, setTaskDeadLineError] = useState('');
 
     const validateTaskName = () => {
         if (!taskName.trim()) {
@@ -46,6 +68,46 @@ const Task: React.FC = () => {
         }
     };
 
+    const validateTaskAssignedBy = () => {
+        if (!taskAssignedBy.trim()) {
+            setTaskAssignedByError('Task Assigned By Person is required');
+            return false;
+        } else {
+            setTaskAssignedByError('');
+            return true;
+        }
+    };
+
+    const validateTaskAssignedFor = () => {
+        if (!taskAssignedFor.trim()) {
+            setTaskAssignedForError('Task Assigned For Person is required');
+            return false;
+        } else {
+            setTaskAssignedForError('');
+            return true;
+        }
+    };
+
+    const validateTaskAssignedDate = () => {
+        if (!taskAssignedDate) {
+            setTaskAssignedDateError('Task Assigned Date is required');
+            return false;
+        } else {
+            setTaskAssignedDateError('');
+            return true;
+        }
+    };
+
+    const validateTaskDeadLine = () => {
+        if (!taskDeadLine) {
+            setTaskDeadLineError('Task Deadline is required');
+            return false;
+        } else {
+            setTaskDeadLineError('');
+            return true;
+        }
+    };
+
     const handleTaskNameChange = (e) => {
         setTaskName(e.target.value);
         validateTaskName();
@@ -55,6 +117,26 @@ const Task: React.FC = () => {
         setTaskDescription(e.target.value);
         validateTaskDescription();
     };
+    const handleTaskAssignedByChange = (e) => {
+        setTaskAssignedBy(e.target.value);
+        validateTaskAssignedBy();
+    };
+
+    const handleTaskAssignedForChange = (e) => {
+        setTaskAssignedFor(e.target.value);
+        validateTaskAssignedFor();
+    };
+
+    const handleTaskAssignedDateChange = (e) => {
+        setTaskAssignedDate(e.target.value);
+        validateTaskAssignedDate();
+    };
+
+    const handleTaskDeadLineChange = (e) => {
+        setTaskDeadLine(e.target.value);
+        validateTaskDeadLine();
+    };
+
 
 
 
@@ -76,15 +158,38 @@ const Task: React.FC = () => {
     }, []);
 
     const saveTask = async () => {
-        if (validateTaskName() && validateTaskDescription()) {
+        const isNameValid = validateTaskName();
+        const isDescriptionValid = validateTaskDescription();
+        const isAssignedByValid = validateTaskAssignedBy();
+        const isAssignedForValid = validateTaskAssignedFor();
+        const isAssignedDateValid = validateTaskAssignedDate();
+        const isDeadLineValid = validateTaskDeadLine();
+
+        if (
+            isNameValid &&
+            isDescriptionValid &&
+            isAssignedByValid &&
+            isAssignedForValid &&
+            isAssignedDateValid &&
+            isDeadLineValid
+        ) {
             try {
                 const response = await AxiosInstance.post('/task/create', {
                     taskName,
-                    taskDescription
+                    taskDescription,
+                    taskAssignedBy,
+                    taskAssignedFor,
+                    taskAssignedDate,
+                    taskDeadLine
+
                 });
                 console.log(response);
                 setTaskName('');
                 setTaskDescription('');
+                setTaskAssignedBy('');
+                setTaskAssignedFor('')
+                setTaskAssignedDate('');
+                setTaskDeadLine('');
                 findAllTasks();
             } catch (e) {
                 console.log(e);
@@ -98,6 +203,10 @@ const Task: React.FC = () => {
             await AxiosInstance.put('/task/update?taskId=' + selectedTaskId, {
                 taskName: updateTaskName,
                 taskDescription: updateTaskDescription,
+                taskAssignedBy: updateTaskAssignedBy,
+                taskAssignedFor: updateTaskAssignedFor,
+                taskAssignedDate: updateTaskAssignedDate,
+                taskDeadLine: updateTaskDeadLine,
                 activeState: updateTaskState
             });
             setModalState(false);
@@ -120,6 +229,10 @@ const Task: React.FC = () => {
         setSelectedTaskId(task.data.data.taskId);
         setUpdateTaskName(task.data.data.taskName);
         setUpdateTaskDescription(task.data.data.taskDescription);
+        setUpdateTaskAssignedBy(task.data.data.taskAssignedBy)
+        setUpdateTaskAssignedFor(task.data.data.taskAssignedFor)
+        setUpdateTaskAssignedDate(task.data.data.taskAssignedDate)
+        setUpdateTaskDeadLine(task.data.data.taskDeadLine)
         setUpdateTaskState(task.data.data.activeState);
         setModalState(true);
     }
@@ -151,6 +264,63 @@ const Task: React.FC = () => {
 
                     </div>
                 </div>
+
+                <div className="row">
+                    <div className="col-6">
+                        <div className="mb-3">
+                            <label htmlFor="exampleFormControlInput1" className="form-label">Task Assigned By</label>
+                            <input
+                                value={taskAssignedBy}
+                                onChange={handleTaskAssignedByChange}
+                                type="text"
+                                className="form-control"
+                                id="exampleFormControlInput1"
+                                placeholder="Task Assigned By"
+                            />
+                            <div className="text-danger">{taskAssignedByError}</div>
+                        </div>
+
+                    </div>
+                    <div className="col-6">
+                        <div className="mb-3">
+                            <label htmlFor="exampleFormControlInput1" className="form-label">Task Assigned For</label>
+                            <input
+                                value={taskAssignedFor}
+                                onChange={handleTaskAssignedForChange}
+                                type="text"
+                                className="form-control"
+                                id="exampleFormControlInput1"
+                                placeholder="Task Assigned For"
+                            />
+                            <div className="text-danger">{taskAssignedForError}</div>
+                        </div>
+                    </div>
+                </div>
+                <div className="row">
+                    <div className="col-6">
+                        <div className="mb-3">
+                            <label htmlFor="exampleFormControlInput1" className="form-label">Task Assigned Date</label>
+                            <Form.Control
+                                type="date"
+                                value={taskAssignedDate}
+                                onChange={handleTaskAssignedDateChange}
+                            />
+                            <div className="text-danger">{taskAssignedDateError}</div>
+                        </div>
+                    </div>
+                    <div className="col-6">
+                        <div className="mb-3">
+                            <label htmlFor="exampleFormControlInput1" className="form-label">Task Assigned DeadLine</label>
+                            <Form.Control
+                                type="date"
+                                value={taskDeadLine}
+                                onChange={handleTaskDeadLineChange}
+                            />
+                            <div className="text-danger">{taskDeadLineError}</div>
+                        </div>
+                    </div>
+                </div>
+
                 <div className="row">
                     <div className="col-12">
                         <div className="mb-3">
@@ -191,6 +361,10 @@ const Task: React.FC = () => {
                                     <th scope="col">Task Id</th>
                                     <th scope="col">Name</th>
                                     <th scope="col">Description</th>
+                                    <th scope="col">AssignedBy</th>
+                                    <th scope="col">AssignedFor</th>
+                                    <th scope="col">AssignedDate</th>
+                                    <th scope="col">DeadLine</th>
                                     <th scope="col">Status</th>
                                     <th scope="col">Actions</th>
                                 </tr>
@@ -202,6 +376,10 @@ const Task: React.FC = () => {
                                             <td>{task.taskId}</td>
                                             <td>{task.taskName}</td>
                                             <td>{task.taskDescription}</td>
+                                            <td>{task.taskAssignedBy}</td>
+                                            <td>{task.taskAssignedFor}</td>
+                                            <td>{task.taskAssignedDate}</td>
+                                            <td>{task.taskDeadLine}</td>
                                             <td>{task.activeState.toString()}</td>
                                             <td>
                                                 <button
@@ -230,7 +408,7 @@ const Task: React.FC = () => {
                                     <tr>
                                         <td colSpan={5} className="text-center">
                                             {tasks.length === 0 ? 'No tasks found. Add New Tasks' : 'Loading tasks...'}
-                                        
+
                                         </td>
                                     </tr>
                                 )}
@@ -253,7 +431,46 @@ const Task: React.FC = () => {
                                 defaultValue={updateTaskName}
                                 className="form-control" />
                         </div>
+                    </div>
+                    <div className="col-12">
+                        <div className="form-group mb-3">
+                            <label htmlFor="name">Assigned By</label>
+                            <input type="text"
+                                onChange={(e) => setUpdateTaskAssignedBy(e.target.value)}
+                                defaultValue={updateTaskAssignedBy}
+                                className="form-control" />
+                        </div>
+                    </div>
+                    <div className="col-12">
+                        <div className="form-group mb-3">
+                            <label htmlFor="name">Assigned For</label>
+                            <input type="text"
+                                onChange={(e) => setUpdateTaskAssignedFor(e.target.value)}
+                                defaultValue={updateTaskAssignedFor}
+                                className="form-control" />
+                        </div>
+                    </div>
+                    <div className="col-12">
+                        <div className="mb-3">
+                            <label htmlFor="exampleFormControlInput1" className="form-label">Task Assigned Date</label>
+                            <Form.Control
+                                onChange={(e) => setUpdateTaskAssignedDate(e.target.value)}
+                                type="date"
+                                defaultValue={updateTaskAssignedDate}
 
+                            />
+                        </div>
+                    </div>
+                    <div className="col-12">
+                        <div className="mb-3">
+                            <label htmlFor="exampleFormControlInput1" className="form-label">Task Assigned Date</label>
+                            <Form.Control
+                                onChange={(e) => setTaskDeadLine(e.target.value)}
+                                type="date"
+                                defaultValue={updateTaskDeadLine}
+
+                            />
+                        </div>
                     </div>
                     <div className="col-12">
                         <div className="form-group mb-3">

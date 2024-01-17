@@ -27,6 +27,18 @@ public class Task {
     @Column(name = "description", length = 255)
     private String taskDescription;
 
+    @Column(name = "assigned_by", length = 255)
+    private String taskAssignedBy;
+
+    @Column(name = "assigned_for", length = 255)
+    private String taskAssignedFor;
+
+    @Column(name = "assigned_date",length = 255)
+    private String taskAssignedDate;
+
+    @Column(name = "deadline",length = 255)
+    private String taskDeadLine;
+
     @Column(name = "active_state", columnDefinition = "TINYINT default 1")
     private boolean activeState;
 
