@@ -1,0 +1,12 @@
+*{
+    font-family: 'Roboto', sans-serif;
+}
+
+.form-control, .form-select{
+    border: 1px solid black!important;
+    border-radius: none!important;
+}
+
+.form-control:focus {
+    box-shadow: none!important;
+  }
