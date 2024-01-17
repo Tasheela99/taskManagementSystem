@@ -136,6 +136,7 @@ const Task: React.FC = () => {
         setTaskDeadLine(e.target.value);
         validateTaskDeadLine();
     };
+    
 
 
 
@@ -147,7 +148,6 @@ const Task: React.FC = () => {
 
             const response = await AxiosInstance.get('/task/get');
             setTasks(response.data.data);
-            console.log(response.data);
         } catch (error) {
             console.error('Error fetching tasks:');
         }
@@ -174,7 +174,7 @@ const Task: React.FC = () => {
             isDeadLineValid
         ) {
             try {
-                const response = await AxiosInstance.post('/task/create', {
+                await AxiosInstance.post('/task/create', {
                     taskName,
                     taskDescription,
                     taskAssignedBy,
@@ -183,7 +183,6 @@ const Task: React.FC = () => {
                     taskDeadLine
 
                 });
-                console.log(response);
                 setTaskName('');
                 setTaskDescription('');
                 setTaskAssignedBy('');
@@ -463,9 +462,9 @@ const Task: React.FC = () => {
                     </div>
                     <div className="col-12">
                         <div className="mb-3">
-                            <label htmlFor="exampleFormControlInput1" className="form-label">Task Assigned Date</label>
+                            <label htmlFor="exampleFormControlInput1" className="form-label">Task DeadLine</label>
                             <Form.Control
-                                onChange={(e) => setTaskDeadLine(e.target.value)}
+                                onChange={(e) => setUpdateTaskDeadLine(e.target.value)}
                                 type="date"
                                 defaultValue={updateTaskDeadLine}
 

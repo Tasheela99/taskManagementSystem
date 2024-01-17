@@ -1,9 +1,8 @@
 package com.system.task.management.system.advisers;
-;
+
 import com.system.task.management.system.exception.EntryDuplicateException;
 import com.system.task.management.system.exception.EntryNotFoundException;
 import com.system.task.management.system.util.StandardResponse;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 
 import org.springframework.http.ResponseEntity;
